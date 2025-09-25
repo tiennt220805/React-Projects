@@ -3,12 +3,19 @@ import { useState, useEffect } from 'react'
 import SearchResult from "./components/SearchResult/SearchResult";
 
 export const BASE_URL = 'http://localhost:9000'
-
+const buttons = [
+  {name: 'All', type: 'all'},
+  {name: 'Breakfast', type: 'breakfast'},
+  {name: 'Lunch', type: 'lunch'},
+  {name: 'Dinner', type: 'dinner'},
+]
 
 const App = () => {
   const [foodData, setFoodData] = useState(null)
+  const [filteredFood, setFilteredFood] = useState(null)
   const [loading, setLoading] = useState(null)
   const [error, setError] = useState(null)
+  const [selectedButton, setSelectedButton] = useState('all')
 
   useEffect(() => {
     const fetchFoodData = async () => {
@@ -19,6 +26,7 @@ const App = () => {
         const foodData = await response.json()
   
         setFoodData(foodData)
+        setFilteredFood(foodData)
         setLoading(false)
       } 
       catch (error) {
@@ -32,42 +40,76 @@ const App = () => {
   if (error) return <div>{error}</div>
   if (loading) return <div>Loading....</div>
 
-  console.log(foodData)
+  const searchFood = (e) => {
+    const searchedValue = e.target.value
+
+    if (searchedValue === '') {
+      setSelectedButton('all')
+    }
+
+    const filteredFood = foodData?.filter((food) => 
+      food.name.toLowerCase().includes(searchedValue.toLowerCase())
+    )
+
+    setFilteredFood(filteredFood)
+  }
+
+  const filterFood = (type) => {
+    setSelectedButton(type)
+
+    if (type.toLowerCase() === 'all') {
+      setFilteredFood(foodData)
+      return
+    }
+
+    const filteredFood = foodData?.filter(food =>
+      food.type.toLowerCase() === type.toLowerCase()
+    )
+
+    setFilteredFood(filteredFood)
+  }
 
   return (
-    <Container>
-      <TopContainer>
-        <div className="logo">
-          <img alt="logo" src="/images/logo.svg"/>
-        </div>
-        <div className="search">
-          <input 
-            placeholder="Search Food..."
-          />
-        </div>
-      </TopContainer>
+    <>
+      <Container>
+        <TopContainer>
+          <div className="logo">
+            <img alt="logo" src="/images/logo.svg"/>
+          </div>
+          <div className="search">
+            <input 
+              onChange={searchFood}
+              placeholder="Search Food..."
+            />
+          </div>
+        </TopContainer>
 
-      <FoodFilter>
-        <Button>All</Button>
-        <Button>Breakfast</Button>
-        <Button>Lunch</Button>
-        <Button>Dinner</Button>
-      </FoodFilter>
-
-      <SearchResult foodData={foodData}/>
-    </Container>
+        <FoodFilter>
+          {
+            buttons.map(button =>
+              <Button 
+                isSelected={button.type === selectedButton}
+                key={button.name} 
+                onClick={() => filterFood(button.type)}
+              >{button.name}</Button>
+            )
+          }
+        </FoodFilter>
+      </Container>
+      <SearchResult foodData={filteredFood}/>
+    </>
   )
 };
 
 export default App;
 
-const Container = styled.div`
+export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
 `
 
 const TopContainer = styled.section`
-  min-height: 140px;
+  height: 140px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -86,18 +128,25 @@ const TopContainer = styled.section`
       color: #ddd;
     }
   }
+
+  @media (0 < width < 600px) {
+    flex-direction: column;
+    height: 120px;
+  }
 `
 
 export const Button = styled.button`
   all: unset;
   border-radius: 5px;
   background: #FF4343;
+  opacity: ${({ isSelected }) => (isSelected ? 1 : 0.8)};
+  outline: 1px solid ${({ isSelected }) => (isSelected ? "white" : "#FF4343")};
   padding: 6px 12px;
   font-size: 16px;
   cursor: pointer;
 
   &:hover {
-    opacity: 0.7;
+    opacity: 1;
   }
 `
 

@@ -1,28 +1,30 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BASE_URL, Button } from '../../App'
+import { BASE_URL, Button, Container } from '../../App'
 
 const SearchResult = ({ foodData: foods }) => {
     return (
         <FoodCardContainer>
-            <FoodCards>   
-                {
-                    foods?.map(({ name, image, text, price }) =>  
-                        <FoodCard key={name}>
-                            <div className="card-image">
-                                <img src={BASE_URL + image} alt="card-image" />
-                            </div>
-                            <div className='card-info'>
-                                <div className='info'>
-                                    <h4>{name}</h4>
-                                    <p>{text}</p>
+            <Container>
+                <FoodCards>   
+                    {
+                        foods?.map(({ name, image, text, price }) =>  
+                            <FoodCard key={name}>
+                                <div className="card-image">
+                                    <img src={BASE_URL + image} alt="card-image" />
                                 </div>
-                                <Button>${price.toFixed(2)}</Button>
-                            </div>
-                        </FoodCard>
-                    )
-                }
-            </FoodCards>
+                                <div className='card-info'>
+                                    <div className='info'>
+                                        <h4>{name}</h4>
+                                        <p>{text}</p>
+                                    </div>
+                                    <Button>${price.toFixed(2)}</Button>
+                                </div>
+                            </FoodCard>
+                        )
+                    }
+                </FoodCards>
+            </Container>
         </FoodCardContainer>
     )
 }
@@ -32,7 +34,7 @@ export default SearchResult
 const FoodCardContainer = styled.section`
   background-image: url("/images/bg.png");
   background-size: cover;
-  height: calc(100vh - 210px);
+  min-height: calc(100vh - 210px);
 `
 
 const FoodCards = styled.div`
