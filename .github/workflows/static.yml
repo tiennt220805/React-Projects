@@ -44,8 +44,8 @@ jobs:
           npm install
 
       - name: Build project
+        working-directory: ./project-3
         run: |
-          cd project-3
           npm run build
 
       # Upload đúng thư mục dist trong project-3
